@@ -349,8 +349,10 @@ func TestIncomingRequests(t *testing.T) {
 				require.NoError(t, err)
 			})
 
-			conn, err := rpc.NewConnection(ctx, fixtures.SomeConnectionId(), fixtures.SomeBool(), raw, handler, logger)
+			conn, err := rpc.NewConnection(fixtures.SomeConnectionId(), fixtures.SomeBool(), raw, handler, logger)
 			require.NoError(t, err)
+
+			go conn.Loop(ctx)
 			defer conn.Close()
 
 			go raw.ReceiveMessages(testCase.MessagesToReceive...)
@@ -457,8 +459,10 @@ func TestPrematureTerminationByRemote(t *testing.T) {
 				requestHandlerTerminatedCorrectly.Store(true)
 			})
 
-			conn, err := rpc.NewConnection(ctx, fixtures.SomeConnectionId(), fixtures.SomeBool(), raw, handler, logger)
+			conn, err := rpc.NewConnection(fixtures.SomeConnectionId(), fixtures.SomeBool(), raw, handler, logger)
 			require.NoError(t, err)
+
+			go conn.Loop(ctx)
 			defer conn.Close()
 
 			go raw.ReceiveMessages(
